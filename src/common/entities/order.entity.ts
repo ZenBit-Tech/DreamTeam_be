@@ -19,26 +19,20 @@ class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   collection_date: Date;
 
-  @Column()
+  @Column({ nullable: false })
   collection_address: string;
 
-  @Column({ type: 'enum', enum: OrderStatus })
+  @Column({ type: 'enum', enum: OrderStatus, nullable: false })
   status: OrderStatus;
 
-  @Column()
+  @Column({ nullable: true })
   note: string;
 
   @Column({ nullable: true })
   failed_reason: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @ManyToOne(() => Route, (route) => route.orders)
   route: Route;
@@ -48,6 +42,12 @@ class Order {
 
   @OneToMany(() => Luggage, (luggage) => luggage.order)
   luggage: Luggage[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default Order;

@@ -18,23 +18,23 @@ class Luggage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'enum', enum: LuggageSize })
+  @Column({ type: 'enum', enum: LuggageSize, nullable: false })
   luggage_size: LuggageSize;
 
-  @Column()
+  @Column({ nullable: false })
   luggage_weight: number;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @ManyToOne(() => Order, (order) => order.luggage)
   order: Order;
 
   @OneToMany(() => LuggageImage, (luggageImage) => luggageImage.luggage)
   images: LuggageImage[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default Luggage;

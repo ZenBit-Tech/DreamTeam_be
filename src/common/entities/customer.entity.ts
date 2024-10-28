@@ -16,26 +16,26 @@ class Customer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   full_name: string;
 
-  @Column()
+  @Column({ nullable: false })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   phone_number: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @ManyToOne(() => Company, (company) => company.customers)
   company: Company;
 
   @OneToMany(() => Order, (order) => order.customer)
   orders: Order[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default Customer;

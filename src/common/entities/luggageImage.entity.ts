@@ -14,17 +14,17 @@ class LuggageImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   image: string;
+
+  @ManyToOne(() => Luggage, (luggage) => luggage.images)
+  luggage: Luggage;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
-
-  @ManyToOne(() => Luggage, (luggage) => luggage.images)
-  luggage: Luggage;
 }
 
 export default LuggageImage;

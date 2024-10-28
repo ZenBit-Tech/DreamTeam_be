@@ -15,26 +15,26 @@ class Company {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   organization_name: string;
 
-  @Column()
+  @Column({ nullable: false })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   client_name: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @OneToMany(() => User, (user) => user.company)
   users: User[];
 
   @OneToMany(() => Customer, (customer) => customer.company)
   customers: Customer[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default Company;

@@ -19,26 +19,20 @@ class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   full_name: string;
 
-  @Column()
+  @Column({ nullable: false })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   phone_number: string;
 
-  @Column({ type: 'enum', enum: UserRole })
+  @Column({ type: 'enum', enum: UserRole, nullable: false })
   role: UserRole;
 
-  @Column()
+  @Column({ nullable: false })
   token: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @ManyToOne(() => Company, (company) => company.users)
   company: Company;
@@ -48,6 +42,12 @@ class User {
 
   @OneToMany(() => Route, (route) => route.user)
   routes: Route[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default User;

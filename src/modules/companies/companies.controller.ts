@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -48,8 +49,10 @@ export class CompaniesController {
   @ApiOperation({ summary: 'Retrieve a single company by ID' })
   @ApiOkResponse({ description: 'Company details', type: CompanyResponse })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Company | null> {
-    return this.companiesService.findOne(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Company | null> {
+    return this.companiesService.findOne(id);
   }
 
   @ApiOperation({ summary: 'Update company by ID' })
@@ -59,16 +62,16 @@ export class CompaniesController {
   })
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCompaniesDto: UpdateCompaniesDto,
   ): Promise<Company> {
-    return this.companiesService.update(+id, updateCompaniesDto);
+    return this.companiesService.update(id, updateCompaniesDto);
   }
 
   @ApiOperation({ summary: 'Remove a company by ID' })
   @ApiOkResponse({ description: 'Company removed', type: CompanyResponse })
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Company | null> {
-    return this.companiesService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<Company | null> {
+    return this.companiesService.remove(id);
   }
 }

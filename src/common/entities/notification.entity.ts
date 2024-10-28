@@ -16,26 +16,26 @@ class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   message: string;
 
-  @Column({ type: 'enum', enum: NotificationType })
+  @Column({ type: 'enum', enum: NotificationType, nullable: false })
   type: NotificationType;
 
-  @Column()
+  @Column({ default: false, nullable: false })
   is_read: boolean;
 
   @Column({ nullable: true })
   link: string;
+
+  @ManyToOne(() => User, (user) => user.notifications)
+  user: User;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
-
-  @ManyToOne(() => User, (user) => user.notifications)
-  user: User;
 }
 
 export default Notification;

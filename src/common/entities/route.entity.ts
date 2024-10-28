@@ -16,26 +16,26 @@ class Route {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   distance: number;
 
-  @Column()
+  @Column({ nullable: false })
   start_address: string;
 
-  @Column()
+  @Column({ nullable: false })
   end_address: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.routes)
   user: User;
 
   @OneToMany(() => Order, (order) => order.route)
   orders: Order[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }
 
 export default Route;

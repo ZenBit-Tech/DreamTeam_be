@@ -5,10 +5,7 @@ import { Repository } from 'typeorm';
 import User from 'src/common/entities/user.entity';
 import { UserRole } from 'src/common/enums';
 
-const MockSuperAdminFullName = 'Super Admin';
-const MockSuperAdminEmail = 'superadmin@example.com';
-const MockSuperPhoneNumber = '+123456';
-const MockSuperPhoneToken = 'mock token';
+import { superAdminSeedData } from './data';
 
 @Injectable()
 export class SeedService {
@@ -26,13 +23,7 @@ export class SeedService {
       if (existingAdmin) {
         return null;
       }
-      const superAdmin: User = this.userRepository.create({
-        full_name: MockSuperAdminFullName,
-        email: MockSuperAdminEmail,
-        phone_number: MockSuperPhoneNumber,
-        role: UserRole.SUPER_ADMIN,
-        token: MockSuperPhoneToken,
-      });
+      const superAdmin: User = this.userRepository.create(superAdminSeedData);
 
       return await this.userRepository.save(superAdmin);
     } catch (error) {

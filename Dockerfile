@@ -1,11 +1,12 @@
-FROM node:20.11.1
+FROM node:20-alpine as builder
 
-WORKDIR /delivery-api
+WORKDIR /delivery
+
 COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-COPY ./dist ./dist
+EXPOSE 3000
 
 CMD ["npm", "run", "start:dev"]

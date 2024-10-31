@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './common/config/configuration';
 import TypeOrmConfigService from './common/config/typeormConfig.service';
 import { CompaniesModule } from './modules/companies/companies.module';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CompaniesModule } from './modules/companies/companies.module';
       useClass: TypeOrmConfigService,
     }),
     CompaniesModule,
+    SeedModule,
   ],
 })
 export default class AppModule {}

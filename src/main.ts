@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import AppModule from './app.module';
+import { SeedService } from './modules/seed/seed.service';
 
 async function bootstrap(): Promise<void> {
   try {
@@ -26,6 +27,11 @@ async function bootstrap(): Promise<void> {
     const document = SwaggerModule.createDocument(app, config);
 
     SwaggerModule.setup('doc', app, document);
+
+    const seedService = app.get(SeedService);
+
+    await seedService.run();
+    await app.close();
 
     await app.listen(PORT);
   } catch (error) {

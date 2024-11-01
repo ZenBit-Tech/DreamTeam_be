@@ -31,7 +31,6 @@ async function bootstrap(): Promise<void> {
     const seedService = app.get(SeedService);
 
     await seedService.run();
-    await app.close();
 
     await app.listen(PORT);
   } catch (error) {

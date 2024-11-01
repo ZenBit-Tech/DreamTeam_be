@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -39,11 +40,16 @@ export class CompaniesController {
     return this.companiesService.create(createCompaniesDto);
   }
 
-  @ApiOperation({ summary: 'Retrieve all companies' })
+  @ApiOperation({
+    summary:
+      'Retrieve all companies. If query parameter "organization-name" is used, then search by organization name is applied. If no such company found [] is returned ',
+  })
   @ApiOkResponse({ description: 'List of companies', type: [CompanyResponse] })
   @Get()
-  async findAll(): Promise<Company[]> {
-    return this.companiesService.findAll();
+  async findAll(
+    @Query('organization-name') organizationName: string = '',
+  ): Promise<Company[]> {
+    return this.companiesService.findByOrganizationName(organizationName);
   }
 
   @ApiOperation({ summary: 'Retrieve a single company by ID' })

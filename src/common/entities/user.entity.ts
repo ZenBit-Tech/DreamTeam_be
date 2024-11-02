@@ -31,7 +31,7 @@ class User {
   @Column({ type: 'enum', enum: UserRole, nullable: false })
   role: UserRole;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   token: string;
 
   @ManyToOne(() => Company, (company) => company.users)

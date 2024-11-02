@@ -4,8 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import databaseConfig from './common/config/configuration';
 import TypeOrmConfigService from './common/config/typeormConfig.service';
+import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { SeedModule } from './modules/seed/seed.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { SeedModule } from './modules/seed/seed.module';
       useClass: TypeOrmConfigService,
     }),
     CompaniesModule,
+    AuthModule,
+    UsersModule,
     SeedModule,
   ],
 })

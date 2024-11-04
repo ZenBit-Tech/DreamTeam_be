@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -20,11 +21,28 @@ export class CompaniesService {
 
   async create(createCompaniesDto: CreateCompaniesDto): Promise<Company> {
     try {
+      if (
+        await this.companyRepository.findOne({
+          where: { organization_name: createCompaniesDto.organization_name },
+        })
+      ) {
+        throw new BadRequestException('Such company already exists');
+      }
+      if (
+        await this.companyRepository.findOne({
+          where: { email: createCompaniesDto.email },
+        })
+      ) {
+        throw new BadRequestException('Company with such email already exists');
+      }
       const company = this.companyRepository.create(createCompaniesDto);
 
       return await this.companyRepository.save(company);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create company');
+      throw new InternalServerErrorException('Failed to create company', {
+        cause: error,
+        description: error.response.message,
+      });
     }
   }
 

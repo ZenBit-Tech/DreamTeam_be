@@ -2,8 +2,8 @@ import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { AuthenticateDto } from './dto/authenticate.dto';
 import { LoginDto } from './dto/login.dto';
+import { SendLoginLinkDto } from './dto/send-login-link.dto';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -16,12 +16,12 @@ export class AuthController {
     status: 200,
     example: { message: 'Login link sent to your email' },
   })
-  @Post('login')
+  @Post('send-login-link')
   @HttpCode(HttpStatus.OK)
   async sendLoginLink(
-    @Body() loginDto: LoginDto,
+    @Body() sendLoginLinkDto: SendLoginLinkDto,
   ): Promise<{ message: string }> {
-    this.authService.login(loginDto.email);
+    this.authService.sendLoginEmail(sendLoginLinkDto.email);
 
     return { message: 'Login link sent to your email' };
   }
@@ -30,13 +30,11 @@ export class AuthController {
   @ApiOkResponse({
     description: 'User authenticated successfully',
     status: 200,
-    type: AuthenticateDto,
+    type: LoginDto,
   })
-  @Post('authenticate')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
-  async authenticate(
-    @Body() authenticateDto: AuthenticateDto,
-  ): Promise<string> {
-    return this.authService.validateToken(authenticateDto.token);
+  async authenticate(@Body() loginDto: LoginDto): Promise<{ token: string }> {
+    return this.authService.login(loginDto.token);
   }
 }

@@ -1,5 +1,3 @@
-import { log } from 'node:console';
-
 import {
   Injectable,
   UnauthorizedException,
@@ -21,14 +19,13 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async login(email: string): Promise<void> {
+  async sendLoginEmail(email: string): Promise<void> {
     try {
       const user = await this.usersService.findOne({
         where: { email },
       });
 
       if (!user) {
-        log(user);
         throw new NotFoundException('User not found');
       }
 
@@ -50,7 +47,7 @@ export class AuthService {
     }
   }
 
-  async validateToken(token: string): Promise<string> {
+  async login(token: string): Promise<{ token: string }> {
     try {
       const payload = this.jwtService.verify(token);
       let user = await this.usersService.findOne({
@@ -63,7 +60,7 @@ export class AuthService {
         user = await this.usersService.updateUser(user.id, { token: null });
       }
 
-      return token;
+      return { token };
     } catch (error) {
       throw new UnauthorizedException((error as Error).message);
     }

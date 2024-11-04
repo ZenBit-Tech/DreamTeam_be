@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 
 import Company from 'src/common/entities/company.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { CreateCompaniesDto } from './dto/create-companies.dto';
 import { UpdateCompaniesDto } from './dto/update-companies.dto';
@@ -31,6 +31,20 @@ export class CompaniesService {
   async findAll(): Promise<Company[]> {
     try {
       return await this.companyRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to retrieve companies');
+    }
+  }
+
+  async findByOrganizationName(organizationName: string): Promise<Company[]> {
+    try {
+      if (!organizationName) return await this.companyRepository.find();
+
+      return await this.companyRepository.find({
+        where: {
+          organization_name: Like(`%${organizationName}%`),
+        },
+      });
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve companies');
     }

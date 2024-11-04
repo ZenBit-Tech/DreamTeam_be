@@ -6,15 +6,18 @@ import databaseConfig from './common/config/configuration';
 import TypeOrmConfigService from './common/config/typeormConfig.service';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { SeedModule } from './modules/seed/seed.module';
+import {OrdersModule} from "./modules/orders/orders.module";
 
 @Module({
   imports: [
+    OrdersModule,
     ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig] }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
     }),
     CompaniesModule,
+
     SeedModule,
   ],
 })

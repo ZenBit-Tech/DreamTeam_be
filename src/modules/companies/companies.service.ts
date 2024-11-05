@@ -32,7 +32,7 @@ export class CompaniesService {
     try {
       return await this.companyRepository.find();
     } catch (error) {
-      throw new InternalServerErrorException('Failed to retrieve companies');
+      throw new InternalServerErrorException((error as Error).message);
     }
   }
 

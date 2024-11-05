@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -70,13 +71,33 @@ export class CompaniesService {
       const company = await this.findOne(id);
 
       if (!company)
-        throw new NotFoundException(`Company with ID ${id} not found`);
+        throw new NotFoundException(`Company with ID ${id} is not found`);
 
+      if (
+        updateCompaniesDto.organization_name &&
+        (await this.companyRepository.findOne({
+          where: { organization_name: updateCompaniesDto.organization_name },
+        }))
+      ) {
+        throw new BadRequestException('Such company already exists');
+      }
+
+      if (
+        updateCompaniesDto.email &&
+        (await this.companyRepository.findOne({
+          where: { email: updateCompaniesDto.email },
+        }))
+      ) {
+        throw new BadRequestException('Company with such email already exists');
+      }
       Object.assign(company, updateCompaniesDto);
 
       return await this.companyRepository.save(company);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update company');
+      throw new InternalServerErrorException('Failed to update company', {
+        cause: error,
+        description: error.response.message,
+      });
     }
   }
 

@@ -17,7 +17,6 @@ import {OrdersModule} from "./modules/orders/orders.module";
       useClass: TypeOrmConfigService,
     }),
     CompaniesModule,
-
     SeedModule,
   ],
 })

@@ -1,13 +1,12 @@
-import {Injectable, InternalServerErrorException} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import Order from '../../common/entities/order.entity';
-import { CreateOrderDto } from './dto/create-orders.dto';
+import {Injectable, InternalServerErrorException} from "@nestjs/common";
+import {CreateOrderDto} from "./dto/create-orders.dto";
+import Order from "src/common/entities/order.entity";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
 
 @Injectable()
 export class OrdersService {
-    constructor(@InjectRepository(Order) private readonly orderRepository: Repository<Order>) {
-    }
+    constructor(@InjectRepository(Order) private readonly orderRepository: Repository<Order>) {}
 
     async create(createOrderDto: CreateOrderDto): Promise<Order> {
         try {
@@ -21,7 +20,9 @@ export class OrdersService {
 
     async findAll(): Promise<Order[]> {
         try {
-            return await this.orderRepository.find();
+            return await this.orderRepository.find({
+                relations: ['customer', 'route', "luggage"],
+            });
         } catch (error) {
             console.error('Error retrieving orders:', error);
             throw new InternalServerErrorException('Failed to retrieve orders');
@@ -30,7 +31,10 @@ export class OrdersService {
 
     async findOne(id: number): Promise<Order | null> {
         try {
-            return await this.orderRepository.findOne({where: {id}});
+            return await this.orderRepository.findOne({
+                where: { id },
+                relations: ['customer', 'route', "luggage"],
+            });
         } catch (error) {
             console.error('Error retrieving order:', error);
             throw new InternalServerErrorException('Failed to retrieve order');

@@ -1,6 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsDate, IsEnum, IsNumber, IsOptional, IsString} from "class-validator";
-import {OrderStatus} from "../../../common/enums";
+import {OrderStatus} from "src/common/enums";
 
 export class UpdateOrderDto {
     @ApiProperty({ example: '2024-11-01T10:00:00Z' })

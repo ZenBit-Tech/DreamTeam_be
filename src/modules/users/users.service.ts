@@ -47,11 +47,11 @@ export class UsersService {
 
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const candidate = await this.findOne({
+      const user = await this.findOne({
         where: { email: createUserDto.email },
       });
 
-      if (candidate) {
+      if (user) {
         throw new BadRequestException(
           `User with email:${createUserDto.email} already exists`,
         );
@@ -61,9 +61,8 @@ export class UsersService {
           `Wrong role for creating admin: ${createUserDto.role}`,
         );
       }
-      const user = this.userRepository.create(createUserDto);
 
-      return await this.userRepository.save(user);
+      return await this.userRepository.save(createUserDto);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -96,19 +95,19 @@ export class UsersService {
 
   async findOneAdmin(id: number): Promise<User> {
     try {
-      const candidate = await this.findOne({
+      const user = await this.findOne({
         where: { id },
       });
 
-      if (!candidate) {
+      if (!user) {
         throw new NotFoundException(`Admin with id:${id} not found`);
       }
 
-      if (candidate.role !== UserRole.ADMIN) {
+      if (user.role !== UserRole.ADMIN) {
         throw new BadRequestException(`User with id:${id} is not an admin`);
       }
 
-      return candidate;
+      return user;
     } catch (error) {
       if (
         error instanceof BadRequestException ||
@@ -127,19 +126,19 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
     try {
-      const candidate = await this.findOne({ where: { id } });
+      const user = await this.findOne({ where: { id } });
 
-      if (!candidate) {
+      if (!user) {
         throw new NotFoundException(`Admin with id:${id} not found`);
       }
 
-      if (candidate.role !== UserRole.ADMIN) {
+      if (user.role !== UserRole.ADMIN) {
         throw new BadRequestException(`User with id:${id} is not an admin`);
       }
 
-      Object.assign(candidate, updateUserDto);
+      Object.assign(user, updateUserDto);
 
-      return await this.userRepository.save(candidate);
+      return await this.userRepository.save(user);
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -155,19 +154,19 @@ export class UsersService {
 
   async deleteAdmin(id: number): Promise<User> {
     try {
-      const candidate = await this.findOne({ where: { id } });
+      const user = await this.findOne({ where: { id } });
 
-      if (!candidate) {
+      if (!user) {
         throw new NotFoundException(`Admin with id:${id} not found`);
       }
 
-      if (candidate.role !== UserRole.ADMIN) {
+      if (user.role !== UserRole.ADMIN) {
         throw new BadRequestException(`User with id:${id} is not an admin`);
       }
 
-      await this.userRepository.remove(candidate);
+      await this.userRepository.remove(user);
 
-      return candidate;
+      return user;
     } catch (error) {
       if (
         error instanceof NotFoundException ||

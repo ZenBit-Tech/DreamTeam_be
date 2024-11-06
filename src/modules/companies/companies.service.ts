@@ -69,26 +69,25 @@ export class CompaniesService {
   ): Promise<Company> {
     try {
       const company = await this.findOne(id);
+      const existingCompany = await this.companyRepository.findOne({
+        where: [
+          { organization_name: updateCompaniesDto.organization_name },
+          { email: updateCompaniesDto.email },
+        ],
+      });
 
       if (!company)
         throw new NotFoundException(`Company with ID ${id} is not found`);
 
-      if (
-        updateCompaniesDto.organization_name &&
-        (await this.companyRepository.findOne({
-          where: { organization_name: updateCompaniesDto.organization_name },
-        }))
-      ) {
-        throw new BadRequestException('Such company already exists');
-      }
+      if (existingCompany) {
+        const existingField =
+          existingCompany.email === updateCompaniesDto.email
+            ? 'email'
+            : 'organization name';
 
-      if (
-        updateCompaniesDto.email &&
-        (await this.companyRepository.findOne({
-          where: { email: updateCompaniesDto.email },
-        }))
-      ) {
-        throw new BadRequestException('Company with such email already exists');
+        throw new BadRequestException(
+          `Company with the same ${existingField} already exists`,
+        );
       }
       Object.assign(company, updateCompaniesDto);
 

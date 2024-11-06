@@ -83,7 +83,6 @@ module.exports = {
         },
       },
     ],
-    'typesafe/no-throw-sync-func': 'error',
     'typesafe/no-await-without-trycatch': 'warn',
     'typesafe/promise-catch': 'off',
     '@typescript-eslint/interface-name-prefix': 'off',

@@ -1,17 +1,19 @@
-import {Injectable, InternalServerErrorException} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Order from 'src/common/entities/order.entity';
 import { CreateOrderDto } from './dto/create-orders.dto';
+import { UpdateOrderDto } from './dto/update-orders.dto';
 
 @Injectable()
 export class OrdersService {
-    constructor(@InjectRepository(Order) private readonly orderRepository: Repository<Order>) {
-    }
+    constructor(
+        @InjectRepository(Order) private readonly orderRepository: Repository<Order>
+    ) {}
 
     async create(createOrderDto: CreateOrderDto): Promise<Order> {
         try {
-            const order = this.orderRepository.create(createOrderDto);
+            const order: Order = this.orderRepository.create(createOrderDto);
             return await this.orderRepository.save(order);
         } catch (error) {
             console.error('Error creating order:', error);
@@ -22,7 +24,7 @@ export class OrdersService {
     async findAll(): Promise<Order[]> {
         try {
             return await this.orderRepository.find({
-                relations: ['customer', 'route', "luggage"],
+                relations: ['customer', 'route', 'luggage'],
             });
         } catch (error) {
             console.error('Error retrieving orders:', error);
@@ -34,7 +36,7 @@ export class OrdersService {
         try {
             return await this.orderRepository.findOne({
                 where: { id },
-                relations: ['customer', 'route',"luggage"],
+                relations: ['customer', 'route', 'luggage'],
             });
         } catch (error) {
             console.error('Error retrieving order:', error);
@@ -42,10 +44,10 @@ export class OrdersService {
         }
     }
 
-    async update(id: number, updateOrderDto: CreateOrderDto): Promise<Order> {
+    async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order | null> {
         try {
             await this.orderRepository.update(id, updateOrderDto);
-            return this.findOne(id);
+            return await this.findOne(id);
         } catch (error) {
             console.error('Error updating order:', error);
             throw new InternalServerErrorException('Failed to update order');

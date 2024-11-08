@@ -44,7 +44,6 @@ export class UsersController {
 
   @Post('/dispatchers')
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve all dispatchers' })
   @ApiResponse({
     status: 200,
@@ -65,7 +64,6 @@ export class UsersController {
 
   @Post('/drivers')
   @Roles(UserRole.ADMIN, UserRole.DISPATCHER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve all drivers' })
   @ApiResponse({
     status: 200,
@@ -97,7 +95,6 @@ export class UsersController {
 
   @Get('/dispatcher/:id')
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve a single dispatcher by ID' })
   @ApiResponse({ status: 200, description: 'Dispatcher found', type: User })
   @HttpCode(HttpStatus.OK)
@@ -111,7 +108,6 @@ export class UsersController {
 
   @Get('/driver/:id')
   @Roles(UserRole.DISPATCHER, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve a single driver by ID' })
   @ApiResponse({ status: 200, description: 'Driver found', type: User })
   @HttpCode(HttpStatus.OK)
@@ -138,7 +134,6 @@ export class UsersController {
 
   @Post('/admin/dispatcher-driver')
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Create a new dispatcher or driver' })
   @ApiResponse({
     status: 201,
@@ -156,7 +151,6 @@ export class UsersController {
 
   @Patch('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Update a admin' })
   @ApiResponse({
     status: 200,
@@ -175,7 +169,6 @@ export class UsersController {
 
   @Patch('/dispatcher/:id')
   @Roles(UserRole.ADMIN, UserRole.DISPATCHER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Update a dispatcher' })
   @ApiResponse({
     status: 200,
@@ -194,7 +187,6 @@ export class UsersController {
 
   @Patch('/driver/:id')
   @Roles(UserRole.ADMIN, UserRole.DRIVER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Update a dispatcher' })
   @ApiResponse({
     status: 200,
@@ -213,7 +205,6 @@ export class UsersController {
 
   @Delete('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Delete an admin' })
   @ApiResponse({
     status: 200,
@@ -229,7 +220,6 @@ export class UsersController {
 
   @Delete('/admin/dispatcher-driver/:id')
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Delete a dispatcher or driver' })
   @ApiResponse({
     status: 200,

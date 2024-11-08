@@ -45,7 +45,10 @@ export class UsersService {
     }
   }
 
-  async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUserWithRole(
+    createUserDto: CreateUserDto,
+    allowedRoles: UserRole[],
+  ): Promise<User> {
     try {
       const user = await this.findOne({
         where: { email: createUserDto.email },
@@ -56,9 +59,9 @@ export class UsersService {
           `User with email:${createUserDto.email} already exists`,
         );
       }
-      if (createUserDto.role !== UserRole.ADMIN) {
+      if (!allowedRoles.includes(createUserDto.role)) {
         throw new BadRequestException(
-          `Wrong role for creating admin: ${createUserDto.role}`,
+          `Invalid role for creating user: ${createUserDto.role}`,
         );
       }
 
@@ -68,19 +71,22 @@ export class UsersService {
         throw error;
       }
       throw new InternalServerErrorException(
-        `Failed to create admin user: ${(error as Error).message}`,
+        `Failed to create user: ${(error as Error).message}`,
       );
     }
   }
 
-  async findAndPaginateAllAdmins(
+  async findAndPaginateAllUsersWithRole(
     paginationUserDto: PaginationUserDto,
+    role?: UserRole,
   ): Promise<{ data: User[]; total: number }> {
     try {
       const pageOffset = 1;
 
+      const whereCondition = role ? { role } : {};
+
       const [data, total] = await this.userRepository.findAndCount({
-        where: { role: UserRole.ADMIN },
+        where: whereCondition,
         skip: (paginationUserDto.page - pageOffset) * paginationUserDto.limit,
         take: paginationUserDto.limit,
       });
@@ -88,23 +94,23 @@ export class UsersService {
       return { data, total };
     } catch (error) {
       throw new InternalServerErrorException(
-        `Failed to retrieve admins: ${(error as Error).message}`,
+        `Failed to retrieve users: ${(error as Error).message}`,
       );
     }
   }
 
-  async findOneAdmin(id: number): Promise<User> {
+  async findOneUser(id: number, role: UserRole): Promise<User> {
     try {
       const user = await this.findOne({
         where: { id },
       });
 
       if (!user) {
-        throw new NotFoundException(`Admin with id:${id} not found`);
+        throw new NotFoundException(`User with id: ${id} not found`);
       }
 
-      if (user.role !== UserRole.ADMIN) {
-        throw new BadRequestException(`User with id:${id} is not an admin`);
+      if (user.role !== role) {
+        throw new BadRequestException(`User with id: ${id} is not a ${role}`);
       }
 
       return user;
@@ -116,24 +122,25 @@ export class UsersService {
         throw error;
       }
       throw new InternalServerErrorException(
-        `Failed to retrieve admin: ${(error as Error).message}`,
+        `Failed to retrieve user: ${(error as Error).message}`,
       );
     }
   }
 
-  async updateAdmin(
+  async updateUserById(
     id: number,
     updateUserDto: UpdateUserDto,
+    role: UserRole,
   ): Promise<User | null> {
     try {
       const user = await this.findOne({ where: { id } });
 
       if (!user) {
-        throw new NotFoundException(`Admin with id:${id} not found`);
+        throw new NotFoundException(`User with id:${id} not found`);
       }
 
-      if (user.role !== UserRole.ADMIN) {
-        throw new BadRequestException(`User with id:${id} is not an admin`);
+      if (user.role !== role) {
+        throw new BadRequestException(`User with id: ${id} is not a ${role}`);
       }
 
       Object.assign(user, updateUserDto);
@@ -152,16 +159,18 @@ export class UsersService {
     }
   }
 
-  async deleteAdmin(id: number): Promise<User> {
+  async deleteUser(id: number, allowedRoles: UserRole[]): Promise<User> {
     try {
       const user = await this.findOne({ where: { id } });
 
       if (!user) {
-        throw new NotFoundException(`Admin with id:${id} not found`);
+        throw new NotFoundException(`User with id:${id} not found`);
       }
 
-      if (user.role !== UserRole.ADMIN) {
-        throw new BadRequestException(`User with id:${id} is not an admin`);
+      if (!allowedRoles.includes(user.role)) {
+        throw new BadRequestException(
+          `You can't delete user with role: ${user.role}`,
+        );
       }
 
       await this.userRepository.remove(user);

@@ -19,7 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendLoginEmail(email: string): Promise<void> {
+  async sendLoginEmail(email: string): Promise<{ message: string }> {
     try {
       const user = await this.usersService.findOne({
         where: { email },
@@ -35,10 +35,23 @@ export class AuthService {
 
       const frontendUrl = this.configService.get<string>('CLIENT_URL');
       const loginUrl = `${frontendUrl}/auth/login?token=${token}`;
-      const subject = 'Login Link';
-      const htmlForEmail = `<p>Click <a href="${loginUrl}">here</a> to log in.</p>`;
+      const subject = 'Welcome to DreamTeam!';
+
+      const htmlForEmail = `
+      <p>Welcome to DreamTeam!</p>
+      <p>Dear ${user.full_name},</p>
+      <p>Your account has been successfully registered! We warmly welcome you to DreamTeam.</p>
+      <p>Log in to DreamTeam by clicking the following <a href="${loginUrl}">link</a></p>
+      
+      <p>If you have any queries or require assistance during the setup process, 
+         please do not hesitate to reply to this email. We are always available to assist you.</p>
+      <p>Best regards,</p>
+      <p>Dream Team</p>
+    `;
 
       await this.emailService.sendMail(email, subject, htmlForEmail);
+
+      return { message: 'Login link sent to your email' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

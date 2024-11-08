@@ -8,7 +8,6 @@ import {
   Delete,
   ParseIntPipe,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -19,9 +18,7 @@ import {
 
 import Company from 'src/common/entities/company.entity';
 import { UserRole } from 'src/common/enums';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { Roles } from 'src/common/guards/roles-auth.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
 
 import { CompaniesService } from './companies.service';
 import { CreateCompaniesDto } from './dto/create-companies.dto';
@@ -51,7 +48,6 @@ export class CompaniesController {
   })
   @ApiOkResponse({ description: 'List of companies', type: [CompanyResponse] })
   @Roles(UserRole.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   async findAll(
     @Query('organization-name') organizationName: string = '',

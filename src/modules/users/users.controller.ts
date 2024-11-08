@@ -9,15 +9,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import User from 'src/common/entities/user.entity';
 import { UserRole } from 'src/common/enums';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { Roles } from 'src/common/guards/roles-auth.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationUserDto } from './dto/pagination-user.dto';
@@ -31,7 +28,6 @@ export class UsersController {
 
   @Post('/admins')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve all admins' })
   @ApiResponse({ status: 200, description: 'List of all admins', type: [User] })
   @HttpCode(HttpStatus.OK)
@@ -43,7 +39,6 @@ export class UsersController {
 
   @Get('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Retrieve a single admin by ID' })
   @ApiResponse({ status: 200, description: 'Admin found', type: User })
   @HttpCode(HttpStatus.OK)
@@ -53,7 +48,6 @@ export class UsersController {
 
   @Post('/admin')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Create a new admin' })
   @ApiResponse({
     status: 201,
@@ -67,7 +61,6 @@ export class UsersController {
 
   @Patch('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({
     status: 200,
@@ -84,7 +77,6 @@ export class UsersController {
 
   @Delete('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({
     status: 200,

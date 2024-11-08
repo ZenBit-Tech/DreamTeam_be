@@ -1,6 +1,8 @@
 import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { SkipAuth } from 'src/common/guards/skip-auth.decorator';
+
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SendLoginLinkDto } from './dto/send-login-link.dto';
@@ -16,14 +18,13 @@ export class AuthController {
     status: 200,
     example: { message: 'Login link sent to your email' },
   })
+  @SkipAuth()
   @Post('send-login-link')
   @HttpCode(HttpStatus.OK)
   async sendLoginLink(
     @Body() sendLoginLinkDto: SendLoginLinkDto,
   ): Promise<{ message: string }> {
-    this.authService.sendLoginEmail(sendLoginLinkDto.email);
-
-    return { message: 'Login link sent to your email' };
+    return this.authService.sendLoginEmail(sendLoginLinkDto.email);
   }
 
   @ApiOperation({ summary: 'Authenticate user with token' })

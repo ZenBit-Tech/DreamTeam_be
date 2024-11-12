@@ -1,19 +1,46 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {In, Like, Repository} from 'typeorm';
 import Order from 'src/common/entities/order.entity';
 import { CreateOrderDto } from './dto/create-orders.dto';
 import { UpdateOrderDto } from './dto/update-orders.dto';
+import Customer from "src/common/entities/customer.entity";
+import Route from "src/common/entities/route.entity";
+import Luggage from "src/common/entities/luggage.entity";
 
 @Injectable()
 export class OrdersService {
     constructor(
-        @InjectRepository(Order) private readonly orderRepository: Repository<Order>
+        @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
+        @InjectRepository(Customer) private readonly customerRepository: Repository<Customer>,
+        @InjectRepository(Route) private readonly routeRepository: Repository<Route>,
+        @InjectRepository(Luggage) private readonly luggageRepository: Repository<Luggage>,
     ) {}
 
     async create(createOrderDto: CreateOrderDto): Promise<Order> {
         try {
-            const order: Order = this.orderRepository.create(createOrderDto);
+            const { customerId, routeId, luggageSize, luggageWeight, ...orderData } = createOrderDto;
+
+            const customer = await this.customerRepository.findOneBy({ id: customerId });
+            const route = await this.routeRepository.findOneBy({ id: routeId });
+
+            if (!customer || !route) {
+                throw new InternalServerErrorException('Customer or Route not found');
+            }
+
+            const luggage = this.luggageRepository.create({
+                luggage_size: luggageSize,
+                luggage_weight: luggageWeight,
+            });
+            await this.luggageRepository.save(luggage);
+
+            const order = this.orderRepository.create({
+                ...orderData,
+                customer,
+                route,
+                luggage: [luggage],
+            });
+
             return await this.orderRepository.save(order);
         } catch (error) {
             console.error('Error creating order:', error);
@@ -21,11 +48,14 @@ export class OrdersService {
         }
     }
 
-    async findAll(): Promise<Order[]> {
+    async findAll(limit: number, offset: number): Promise<{ data: Order[]; total: number }> {
         try {
-            return await this.orderRepository.find({
+            const [data, total] = await this.orderRepository.findAndCount({
                 relations: ['customer', 'route', 'luggage'],
+                take: limit,
+                skip: offset,
             });
+            return { data, total };
         } catch (error) {
             console.error('Error retrieving orders:', error);
             throw new InternalServerErrorException('Failed to retrieve orders');

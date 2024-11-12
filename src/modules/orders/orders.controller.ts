@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Patch, ParseIntPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Post,
+    Patch,
+    ParseIntPipe,
+    Query,
+    DefaultValuePipe,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-orders.dto';
@@ -22,14 +32,18 @@ export class OrderController {
         return this.ordersService.create(createOrderDto);
     }
 
-    @ApiOperation({ summary: 'Retrieve all orders' })
+    @ApiOperation({ summary: 'Retrieve all orders with pagination' })
     @ApiOkResponse({
-        description: 'List of orders',
+        description: 'List of paginated orders',
         type: [OrderResponse],
     })
+
     @Get()
-    async findAll(): Promise<Order[]> {
-        return this.ordersService.findAll();
+    async findAll(
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+        @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number,
+    ): Promise<{ data: Order[]; total: number }> {
+        return this.ordersService.findAll(limit, offset);
     }
 
     @ApiOperation({ summary: 'Retrieve a single order by ID' })

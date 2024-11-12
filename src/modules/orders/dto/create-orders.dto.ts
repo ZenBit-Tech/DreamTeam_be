@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsEnum, IsString, IsDate, IsNumber } from 'class-validator';
-import {OrderStatus} from "src/common/enums";
+import {LuggageSize, OrderStatus} from "src/common/enums";
 
 export class CreateOrderDto {
     @ApiProperty({ example: '2024-11-01T10:00:00Z' })
@@ -38,7 +38,10 @@ export class CreateOrderDto {
     @IsNumber()
     readonly customerId: number;
 
-    @ApiProperty({ example: [1, 2, 3] })
-    @IsOptional()
-    readonly luggageIds?: number[];
+    @IsNotEmpty()
+    @IsEnum(LuggageSize)
+    luggageSize: LuggageSize;
+
+    @IsNumber()
+    luggageWeight: number;
 }

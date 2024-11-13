@@ -25,7 +25,12 @@ class Order {
   @Column({ nullable: false })
   collection_address: string;
 
-  @Column({ type: 'enum', enum: OrderStatus, nullable: false })
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    nullable: false,
+    default: OrderStatus.NEW,
+  })
   status: OrderStatus;
 
   @Column({ nullable: true })

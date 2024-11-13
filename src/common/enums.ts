@@ -6,6 +6,7 @@ export enum UserRole {
 }
 
 export enum OrderStatus {
+  NEW = 'New',
   COMPLETED = 'Completed',
   FAILED = 'Failed',
   NOT_ARRIVED = 'Not arrived',

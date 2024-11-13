@@ -10,10 +10,12 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { SeedModule } from './modules/seed/seed.module';
+import {OrdersModule} from "./modules/orders/orders.module";
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
+    OrdersModule,
     ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig] }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -35,4 +37,5 @@ import { UsersModule } from './modules/users/users.module';
     },
   ],
 })
+
 export default class AppModule {}

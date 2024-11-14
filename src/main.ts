@@ -20,6 +20,12 @@ async function bootstrap(): Promise<void> {
       defaultVersion: '1',
     });
 
+    app.enableCors({
+      origin: configService.get<string>('CLIENT_URL'),
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
+
     const config = new DocumentBuilder()
       .setTitle('Delivery API')
       .setDescription('Api documentation')

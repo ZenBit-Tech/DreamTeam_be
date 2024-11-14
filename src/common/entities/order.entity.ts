@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -46,6 +46,7 @@ class Order {
   customer: Customer;
 
   @OneToMany(() => Luggage, (luggage) => luggage.order)
+  @JoinTable()
   luggage: Luggage[];
 
   @CreateDateColumn({ type: 'timestamp' })

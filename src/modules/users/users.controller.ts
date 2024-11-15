@@ -34,11 +34,9 @@ export class UsersController {
   findAllAdmins(
     @Body() paginationUserDto: PaginationUserDto,
   ): Promise<{ data: User[]; total: number }> {
-    const allowedRole: UserRole = UserRole.ADMIN;
-
     return this.usersService.findAndPaginateAllUsersWithRole(
       paginationUserDto,
-      allowedRole,
+      UserRole.ADMIN,
     );
   }
 
@@ -54,11 +52,9 @@ export class UsersController {
   findAllDispatchers(
     @Body() paginationUserDto: PaginationUserDto,
   ): Promise<{ data: User[]; total: number }> {
-    const allowedRole: UserRole = UserRole.DISPATCHER;
-
     return this.usersService.findAndPaginateAllUsersWithRole(
       paginationUserDto,
-      allowedRole,
+      UserRole.DISPATCHER,
     );
   }
 
@@ -74,11 +70,9 @@ export class UsersController {
   findAllDrivers(
     @Body() paginationUserDto: PaginationUserDto,
   ): Promise<{ data: User[]; total: number }> {
-    const allowedRole: UserRole = UserRole.DRIVER;
-
     return this.usersService.findAndPaginateAllUsersWithRole(
       paginationUserDto,
-      allowedRole,
+      UserRole.DRIVER,
     );
   }
 
@@ -88,9 +82,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Admin found', type: User })
   @HttpCode(HttpStatus.OK)
   findOneAdmin(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.ADMIN;
-
-    return this.usersService.findOneUser(id, allowedRole);
+    return this.usersService.findOneUser(id, UserRole.ADMIN);
   }
 
   @Get('/dispatcher/:id')
@@ -101,9 +93,7 @@ export class UsersController {
   findOneDispatcher(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.DISPATCHER;
-
-    return this.usersService.findOneUser(id, allowedRole);
+    return this.usersService.findOneUser(id, UserRole.DISPATCHER);
   }
 
   @Get('/driver/:id')
@@ -112,9 +102,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Driver found', type: User })
   @HttpCode(HttpStatus.OK)
   findOneDriver(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.DRIVER;
-
-    return this.usersService.findOneUser(id, allowedRole);
+    return this.usersService.findOneUser(id, UserRole.DRIVER);
   }
 
   @Post('/admin')
@@ -127,9 +115,9 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.CREATED)
   createAdmin(@Body() createUserDto: CreateUserDto): Promise<User> {
-    const allowedRoles: UserRole[] = [UserRole.ADMIN];
-
-    return this.usersService.createUserWithRole(createUserDto, allowedRoles);
+    return this.usersService.createUserWithRole(createUserDto, [
+      UserRole.ADMIN,
+    ]);
   }
 
   @Post('/admin/dispatcher-driver')
@@ -144,9 +132,10 @@ export class UsersController {
   createDispatcherOrDriver(
     @Body() createUserDto: CreateUserDto,
   ): Promise<User> {
-    const allowedRoles: UserRole[] = [UserRole.DISPATCHER, UserRole.DRIVER];
-
-    return this.usersService.createUserWithRole(createUserDto, allowedRoles);
+    return this.usersService.createUserWithRole(createUserDto, [
+      UserRole.DISPATCHER,
+      UserRole.DRIVER,
+    ]);
   }
 
   @Patch('/admin/:id')
@@ -162,9 +151,7 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.ADMIN;
-
-    return this.usersService.updateUserById(id, updateUserDto, allowedRole);
+    return this.usersService.updateUserById(id, updateUserDto, UserRole.ADMIN);
   }
 
   @Patch('/dispatcher/:id')
@@ -180,9 +167,11 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.DISPATCHER;
-
-    return this.usersService.updateUserById(id, updateUserDto, allowedRole);
+    return this.usersService.updateUserById(
+      id,
+      updateUserDto,
+      UserRole.DISPATCHER,
+    );
   }
 
   @Patch('/driver/:id')
@@ -198,9 +187,7 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
-    const allowedRole: UserRole = UserRole.DRIVER;
-
-    return this.usersService.updateUserById(id, updateUserDto, allowedRole);
+    return this.usersService.updateUserById(id, updateUserDto, UserRole.DRIVER);
   }
 
   @Delete('/admin/:id')
@@ -213,9 +200,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.OK)
   deleteAdmin(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    const allowedRoles: UserRole[] = [UserRole.ADMIN];
-
-    return this.usersService.deleteUser(id, allowedRoles);
+    return this.usersService.deleteUser(id, [UserRole.ADMIN]);
   }
 
   @Delete('/admin/dispatcher-driver/:id')
@@ -230,8 +215,9 @@ export class UsersController {
   deleteDispatcherOrDriver(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<User> {
-    const allowedRoles: UserRole[] = [UserRole.DISPATCHER, UserRole.DRIVER];
-
-    return this.usersService.deleteUser(id, allowedRoles);
+    return this.usersService.deleteUser(id, [
+      UserRole.DISPATCHER,
+      UserRole.DRIVER,
+    ]);
   }
 }

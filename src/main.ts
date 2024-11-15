@@ -22,10 +22,12 @@ async function bootstrap(): Promise<void> {
       defaultVersion: '1',
     });
 
+
     app.use(cookieParser());
 
     app.enableCors({
       origin: configService.get<string>('CLIENT_URL'),
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     });
 

@@ -90,5 +90,6 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
     'import/prefer-default-export': 'off',
+    'class-methods-use-this': 'warn',
   },
 };

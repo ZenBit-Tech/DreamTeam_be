@@ -25,3 +25,9 @@ export enum LuggageSize {
   MIDDLE = 'middle',
   BIG = 'big',
 }
+
+export enum TokensExpiration {
+  ACCESS_TOKEN_EXP = '15m',
+  REFRESH_TOKEN_EXP = '7d',
+  COOKIES_EXP = 7,
+}

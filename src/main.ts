@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import * as cookieParser from 'cookie-parser';
+
 import AppModule from './app.module';
 import { SeedService } from './modules/seed/seed.service';
 
@@ -19,6 +21,9 @@ async function bootstrap(): Promise<void> {
       type: VersioningType.URI,
       defaultVersion: '1',
     });
+
+
+    app.use(cookieParser());
 
     app.enableCors({
       origin: configService.get<string>('CLIENT_URL'),

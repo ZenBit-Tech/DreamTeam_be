@@ -31,10 +31,49 @@ export class UsersController {
   @ApiOperation({ summary: 'Retrieve all admins' })
   @ApiResponse({ status: 200, description: 'List of all admins', type: [User] })
   @HttpCode(HttpStatus.OK)
-  findAll(
+  findAllAdmins(
     @Body() paginationUserDto: PaginationUserDto,
   ): Promise<{ data: User[]; total: number }> {
-    return this.usersService.findAndPaginateAllAdmins(paginationUserDto);
+    return this.usersService.findAndPaginateAllUsersWithRole(
+      paginationUserDto,
+      UserRole.ADMIN,
+    );
+  }
+
+  @Post('/dispatchers')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve all dispatchers' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all dispatchers',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  findAllDispatchers(
+    @Body() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    return this.usersService.findAndPaginateAllUsersWithRole(
+      paginationUserDto,
+      UserRole.DISPATCHER,
+    );
+  }
+
+  @Post('/drivers')
+  @Roles(UserRole.ADMIN, UserRole.DISPATCHER)
+  @ApiOperation({ summary: 'Retrieve all drivers' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all drivers',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  findAllDrivers(
+    @Body() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    return this.usersService.findAndPaginateAllUsersWithRole(
+      paginationUserDto,
+      UserRole.DRIVER,
+    );
   }
 
   @Get('/admin/:id')
@@ -42,8 +81,28 @@ export class UsersController {
   @ApiOperation({ summary: 'Retrieve a single admin by ID' })
   @ApiResponse({ status: 200, description: 'Admin found', type: User })
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
-    return this.usersService.findOneAdmin(id);
+  findOneAdmin(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
+    return this.usersService.findOneUser(id, UserRole.ADMIN);
+  }
+
+  @Get('/dispatcher/:id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve a single dispatcher by ID' })
+  @ApiResponse({ status: 200, description: 'Dispatcher found', type: User })
+  @HttpCode(HttpStatus.OK)
+  findOneDispatcher(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<User | null> {
+    return this.usersService.findOneUser(id, UserRole.DISPATCHER);
+  }
+
+  @Get('/driver/:id')
+  @Roles(UserRole.DISPATCHER, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve a single driver by ID' })
+  @ApiResponse({ status: 200, description: 'Driver found', type: User })
+  @HttpCode(HttpStatus.OK)
+  findOneDriver(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
+    return this.usersService.findOneUser(id, UserRole.DRIVER);
   }
 
   @Post('/admin')
@@ -55,36 +114,110 @@ export class UsersController {
     type: User,
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.createAdminUser(createUserDto);
+  createAdmin(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.usersService.createUserWithRole(createUserDto, [
+      UserRole.ADMIN,
+    ]);
+  }
+
+  @Post('/admin/dispatcher-driver')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Create a new dispatcher or driver' })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully created',
+    type: User,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  createDispatcherOrDriver(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<User> {
+    return this.usersService.createUserWithRole(createUserDto, [
+      UserRole.DISPATCHER,
+      UserRole.DRIVER,
+    ]);
   }
 
   @Patch('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Update a user' })
+  @ApiOperation({ summary: 'Update a admin' })
   @ApiResponse({
     status: 200,
-    description: 'User successfully updated',
+    description: 'Admin successfully updated',
     type: User,
   })
   @HttpCode(HttpStatus.OK)
-  update(
+  updateAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
-    return this.usersService.updateAdmin(id, updateUserDto);
+    return this.usersService.updateUserById(id, updateUserDto, UserRole.ADMIN);
+  }
+
+  @Patch('/dispatcher/:id')
+  @Roles(UserRole.ADMIN, UserRole.DISPATCHER)
+  @ApiOperation({ summary: 'Update a dispatcher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dispatcher successfully updated',
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  updateDispatcher(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User | null> {
+    return this.usersService.updateUserById(
+      id,
+      updateUserDto,
+      UserRole.DISPATCHER,
+    );
+  }
+
+  @Patch('/driver/:id')
+  @Roles(UserRole.ADMIN, UserRole.DRIVER)
+  @ApiOperation({ summary: 'Update a dispatcher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dispatcher successfully updated',
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  updateDriver(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User | null> {
+    return this.usersService.updateUserById(id, updateUserDto, UserRole.DRIVER);
   }
 
   @Delete('/admin/:id')
   @Roles(UserRole.SUPER_ADMIN)
-  @ApiOperation({ summary: 'Delete a user' })
+  @ApiOperation({ summary: 'Delete an admin' })
   @ApiResponse({
     status: 200,
-    description: 'User successfully deleted',
+    description: 'Admin successfully deleted',
     type: User,
   })
   @HttpCode(HttpStatus.OK)
-  delete(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.usersService.deleteAdmin(id);
+  deleteAdmin(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return this.usersService.deleteUser(id, [UserRole.ADMIN]);
+  }
+
+  @Delete('/admin/dispatcher-driver/:id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete a dispatcher or driver' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dispatcher or driver successfully deleted',
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  deleteDispatcherOrDriver(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<User> {
+    return this.usersService.deleteUser(id, [
+      UserRole.DISPATCHER,
+      UserRole.DRIVER,
+    ]);
   }
 }

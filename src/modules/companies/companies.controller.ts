@@ -51,12 +51,19 @@ export class CompaniesController {
   @Get()
   async findAll(
     @Query('organization-name') organizationName: string = '',
-  ): Promise<Company[]> {
-    return this.companiesService.findByOrganizationName(organizationName);
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 5,
+  ): Promise<{ data: Company[]; total: number }> {
+    return this.companiesService.findByOrganizationName(
+      organizationName,
+      page,
+      limit,
+    );
   }
 
   @ApiOperation({ summary: 'Retrieve a single company by ID' })
   @ApiOkResponse({ description: 'Company details', type: CompanyResponse })
+  @Roles(UserRole.SUPER_ADMIN)
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -69,6 +76,7 @@ export class CompaniesController {
     description: 'Updated company details',
     type: CompanyResponse,
   })
+  @Roles(UserRole.SUPER_ADMIN)
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -79,6 +87,7 @@ export class CompaniesController {
 
   @ApiOperation({ summary: 'Remove a company by ID' })
   @ApiOkResponse({ description: 'Company removed', type: CompanyResponse })
+  @Roles(UserRole.SUPER_ADMIN)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Company | null> {
     return this.companiesService.remove(id);

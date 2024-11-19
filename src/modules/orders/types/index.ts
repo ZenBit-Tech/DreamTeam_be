@@ -29,7 +29,7 @@ export default class OrderResponse {
   status: string;
 
   @ApiProperty({
-    example: 150.50,
+    example: 150.5,
     description: 'The total amount of the order',
   })
   totalAmount: number;

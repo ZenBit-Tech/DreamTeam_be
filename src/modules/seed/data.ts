@@ -1,6 +1,6 @@
-import {LuggageSize, OrderStatus, UserRole} from 'src/common/enums';
-import Customer from "src/common/entities/customer.entity";
-import Route from "src/common/entities/route.entity";
+import Customer from 'src/common/entities/customer.entity';
+import Route from 'src/common/entities/route.entity';
+import { LuggageSize, OrderStatus, UserRole } from 'src/common/enums';
 
 export const superAdminSeedData = {
   full_name: 'Super Admin',
@@ -14,7 +14,7 @@ export const seedCollectionDate = new Date();
 
 export const getOrdersSeedData = (customer: Customer, route: Route) => [
   {
-    collection_date: seedCollectionDate,
+    collection_date: new Date('2024-01-01T10:00:00Z'),
     collection_address: '123 Main St, City',
     status: OrderStatus.UPCOMING,
     note: 'Handle with care',
@@ -26,47 +26,39 @@ export const getOrdersSeedData = (customer: Customer, route: Route) => [
     ],
   },
   {
-    collection_date: seedCollectionDate,
+    collection_date: new Date('2024-02-14T14:00:00Z'),
     collection_address: '456 Elm St, City',
     status: OrderStatus.COMPLETED,
-    note: null,
+    note: 'No issues reported',
     customer,
     route,
-    luggage: [
-      { luggage_size: LuggageSize.BIG, luggage_weight: 30 },
-    ],
+    luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: seedCollectionDate,
+    collection_date: new Date('2024-03-08T09:00:00Z'),
     collection_address: '320 Elm St, City',
     status: OrderStatus.AT_RISK,
-    note: null,
+    note: 'Delayed delivery',
     customer,
     route,
-    luggage: [
-      { luggage_size: LuggageSize.BIG, luggage_weight: 30 },
-    ],
+    luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: seedCollectionDate,
+    collection_date: new Date('2024-04-10T15:00:00Z'),
     collection_address: '500 Elm St, City',
     status: OrderStatus.COMPLETED,
     note: null,
     customer,
     route,
-    luggage: [
-      { luggage_size: LuggageSize.BIG, luggage_weight: 30 },
-    ],
+    luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: seedCollectionDate,
+    collection_date: new Date('2024-05-20T08:30:00Z'),
     collection_address: '234 Elm St, City',
     status: OrderStatus.UPCOMING,
-    note: null,
+    note: 'Fragile items',
     customer,
     route,
-    luggage: [
-      { luggage_size: LuggageSize.BIG, luggage_weight: 30 },
-    ],
+    luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
-]
+];

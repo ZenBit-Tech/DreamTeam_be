@@ -220,4 +220,19 @@ export class UsersController {
       UserRole.DRIVER,
     ]);
   }
+
+  @Get('/admins/company/:companyId')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve admins by company ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of admins by company ID',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  findAdminsByCompanyId(
+    @Param('companyId', ParseIntPipe) companyId: number,
+  ): Promise<User[]> {
+    return this.usersService.findUsersByCompanyId(companyId, UserRole.ADMIN);
+  }
 }

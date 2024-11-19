@@ -188,4 +188,19 @@ export class UsersService {
       );
     }
   }
+
+  async findUsersByCompanyId(
+    companyId: number,
+    role: UserRole,
+  ): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: {
+        company: { id: companyId },
+        role,
+      },
+      relations: ['company'],
+    });
+
+    return users;
+  }
 }

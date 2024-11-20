@@ -22,7 +22,6 @@ async function bootstrap(): Promise<void> {
       defaultVersion: '1',
     });
 
-
     app.use(cookieParser());
 
     app.enableCors({

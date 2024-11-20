@@ -19,6 +19,7 @@ import {
 import Company from 'src/common/entities/company.entity';
 import { UserRole } from 'src/common/enums';
 import { Roles } from 'src/common/guards/roles-auth.decorator';
+import { SkipAuth } from 'src/common/guards/skip-auth.decorator';
 
 import { CompaniesService } from './companies.service';
 import { CreateCompaniesDto } from './dto/create-companies.dto';
@@ -53,11 +54,13 @@ export class CompaniesController {
     @Query('organization-name') organizationName: string = '',
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
+    @Query('sort') sort: 'ASC' | 'DESC' = 'ASC',
   ): Promise<{ data: Company[]; total: number }> {
     return this.companiesService.findByOrganizationName(
       organizationName,
       page,
       limit,
+      sort,
     );
   }
 

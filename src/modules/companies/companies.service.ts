@@ -58,6 +58,7 @@ export class CompaniesService {
     organizationName: string,
     page: number,
     limit: number,
+    sort: 'ASC' | 'DESC',
   ): Promise<{ data: Company[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -66,6 +67,9 @@ export class CompaniesService {
         const [data, total] = await this.companyRepository.findAndCount({
           skip,
           take: limit,
+          order: {
+            organization_name: sort,
+          },
         });
 
         return { data, total };
@@ -77,6 +81,9 @@ export class CompaniesService {
         },
         skip,
         take: limit,
+        order: {
+          organization_name: sort,
+        },
       });
 
       return { data, total };

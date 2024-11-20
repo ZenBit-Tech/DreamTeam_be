@@ -9,7 +9,12 @@ import User from 'src/common/entities/user.entity';
 import { OrderStatus, UserRole } from 'src/common/enums';
 import { Repository } from 'typeorm';
 
-import { getOrdersSeedData, superAdminSeedData } from './data';
+import {
+  getOrdersSeedData,
+  superAdminSeedData,
+  customerSeedData,
+  routeSeedData,
+} from './data';
 
 @Injectable()
 export class SeedService {
@@ -39,6 +44,41 @@ export class SeedService {
       return await this.userRepository.save(superAdmin);
     } catch (error) {
       throw new InternalServerErrorException('Failed to seed a super admin');
+    }
+  }
+
+  async seedCustomer(): Promise<Customer | null> {
+    try {
+      const existingCustomer = await this.customerRepository.findOne({
+        where: { id: 1 },
+      });
+
+      if (existingCustomer) {
+        return null;
+      }
+      const customer: Customer =
+        this.customerRepository.create(customerSeedData);
+
+      return await this.customerRepository.save(customer);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to seed a customer');
+    }
+  }
+
+  async seedRoute(): Promise<Route | null> {
+    try {
+      const existingRoute = await this.routeRepository.findOne({
+        where: { id: 1 },
+      });
+
+      if (existingRoute) {
+        return null;
+      }
+      const route: Route = this.routeRepository.create(routeSeedData);
+
+      return await this.routeRepository.save(route);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to seed a route');
     }
   }
 
@@ -90,10 +130,13 @@ export class SeedService {
   async run(): Promise<void> {
     try {
       await this.seedSuperAdmin();
+      await this.seedCustomer();
+      await this.seedRoute();
       await this.seedOrders();
     } catch (error) {
-      console.error('Error during seeding:', error);
-      throw error;
+      throw new InternalServerErrorException(
+        `Failed to seed orders and luggage: ${(error as Error).message}`,
+      );
     }
   }
 }

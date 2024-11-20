@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import User from 'src/common/entities/user.entity';
 import { UserRole } from 'src/common/enums';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationUserDto } from './dto/pagination-user.dto';
@@ -185,6 +185,50 @@ export class UsersService {
       }
       throw new InternalServerErrorException(
         `Failed to delete user: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  async findUsersByCompanyId(
+    companyId: number,
+    role: UserRole,
+  ): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: {
+        company: { id: companyId },
+        role,
+      },
+      relations: ['company'],
+    });
+
+    return users;
+  }
+
+  async findAndPaginateAdminsByCompanyAndName(
+    companyId: number,
+    name: string,
+    paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    try {
+      const pageOffset = 1;
+
+      const [data, total] = await this.userRepository.findAndCount({
+        where: {
+          role: UserRole.ADMIN,
+          company: {
+            id: companyId,
+          },
+          full_name: Like(`%${name}%`),
+        },
+        relations: ['company'],
+        skip: (paginationUserDto.page - pageOffset) * paginationUserDto.limit,
+        take: paginationUserDto.limit,
+      });
+
+      return { data, total };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to find paginated admins by company and name: ${(error as Error).message}`,
       );
     }
   }

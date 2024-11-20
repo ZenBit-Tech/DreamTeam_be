@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,6 +10,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -219,5 +222,61 @@ export class UsersController {
       UserRole.DISPATCHER,
       UserRole.DRIVER,
     ]);
+  }
+
+  @Get('/admins/company/:companyId')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve admins by company ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of admins by company ID',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  findAdminsByCompanyId(
+    @Param('companyId', ParseIntPipe) companyId: number,
+  ): Promise<User[]> {
+    return this.usersService.findUsersByCompanyId(companyId, UserRole.ADMIN);
+  }
+
+  @Get('/admins')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve paginated admins list' })
+  @ApiResponse({ status: 200, description: 'List of admins', type: [User] })
+  @HttpCode(HttpStatus.OK)
+  async getAdminsList(
+    @Query() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    return this.usersService.findAndPaginateAllUsersWithRole(paginationUserDto);
+  }
+
+  @Get('/admins/search-by-company')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Search admins by company and name with pagination',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of admins in the company matching the name',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  async searchAdminsByCompanyAndName(
+    @Query('companyId', ParseIntPipe) companyId: number,
+    @Query('name') name: string,
+    @Query() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    if (!companyId) {
+      throw new BadRequestException('CompanyId query parameter is required');
+    }
+    if (!name) {
+      throw new BadRequestException('Name query parameter is required');
+    }
+
+    return this.usersService.findAndPaginateAdminsByCompanyAndName(
+      companyId,
+      name,
+      paginationUserDto,
+    );
   }
 }

@@ -54,15 +54,32 @@ export class CompaniesService {
     }
   }
 
-  async findByOrganizationName(organizationName: string): Promise<Company[]> {
+  async findByOrganizationName(
+    organizationName: string,
+    page: number,
+    limit: number,
+  ): Promise<{ data: Company[]; total: number }> {
     try {
-      if (!organizationName) return await this.companyRepository.find();
+      const skip = (page - 1) * limit;
 
-      return await this.companyRepository.find({
+      if (!organizationName) {
+        const [data, total] = await this.companyRepository.findAndCount({
+          skip,
+          take: limit,
+        });
+
+        return { data, total };
+      }
+
+      const [data, total] = await this.companyRepository.findAndCount({
         where: {
           organization_name: Like(`%${organizationName}%`),
         },
+        skip,
+        take: limit,
       });
+
+      return { data, total };
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve companies');
     }

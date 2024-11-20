@@ -204,24 +204,31 @@ export class UsersService {
     return users;
   }
 
-  async findAdminsByCompanyAndName(
+  async findAndPaginateAdminsByCompanyAndName(
     companyId: number,
     name: string,
-  ): Promise<User[]> {
+    paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
     try {
-      return await this.userRepository.find({
+      const pageOffset = 1;
+
+      const [data, total] = await this.userRepository.findAndCount({
         where: {
           role: UserRole.ADMIN,
           company: {
-            id: companyId, // Используем объект связи для фильтрации по companyId
+            id: companyId,
           },
-          full_name: Like(`%${name}%`), // Частичный поиск по имени
+          full_name: Like(`%${name}%`),
         },
-        relations: ['company'], // Загружаем связь с компанией
+        relations: ['company'],
+        skip: (paginationUserDto.page - pageOffset) * paginationUserDto.limit,
+        take: paginationUserDto.limit,
       });
+
+      return { data, total };
     } catch (error) {
       throw new InternalServerErrorException(
-        `Failed to find admins by company and name: ${(error as Error).message}`,
+        `Failed to find paginated admins by company and name: ${(error as Error).message}`,
       );
     }
   }

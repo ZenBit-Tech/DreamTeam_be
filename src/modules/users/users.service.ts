@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import User from 'src/common/entities/user.entity';
 import { UserRole } from 'src/common/enums';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationUserDto } from './dto/pagination-user.dto';
@@ -202,5 +202,27 @@ export class UsersService {
     });
 
     return users;
+  }
+
+  async findAdminsByCompanyAndName(
+    companyId: number,
+    name: string,
+  ): Promise<User[]> {
+    try {
+      return await this.userRepository.find({
+        where: {
+          role: UserRole.ADMIN,
+          company: {
+            id: companyId, // Используем объект связи для фильтрации по companyId
+          },
+          full_name: Like(`%${name}%`), // Частичный поиск по имени
+        },
+        relations: ['company'], // Загружаем связь с компанией
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to find admins by company and name: ${(error as Error).message}`,
+      );
+    }
   }
 }

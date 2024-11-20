@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,6 +10,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -234,5 +236,39 @@ export class UsersController {
     @Param('companyId', ParseIntPipe) companyId: number,
   ): Promise<User[]> {
     return this.usersService.findUsersByCompanyId(companyId, UserRole.ADMIN);
+  }
+
+  @Get('/admins')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Retrieve paginated admins list' })
+  @ApiResponse({ status: 200, description: 'List of admins', type: [User] })
+  @HttpCode(HttpStatus.OK)
+  async getAdminsList(
+    @Query() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
+    return this.usersService.findAndPaginateAllUsersWithRole(paginationUserDto);
+  }
+
+  @Get('/admins/search-by-company')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Search admins by company and name' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of admins in the company matching the name',
+    type: [User],
+  })
+  @HttpCode(HttpStatus.OK)
+  async searchAdminsByCompanyAndName(
+    @Query('companyId') companyId: number,
+    @Query('name') name: string,
+  ): Promise<User[]> {
+    if (!companyId) {
+      throw new BadRequestException('CompanyId query parameter is required');
+    }
+    if (!name) {
+      throw new BadRequestException('Name query parameter is required');
+    }
+
+    return this.usersService.findAdminsByCompanyAndName(companyId, name);
   }
 }

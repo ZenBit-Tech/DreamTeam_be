@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -251,17 +252,20 @@ export class UsersController {
 
   @Get('/admins/search-by-company')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Search admins by company and name' })
+  @ApiOperation({
+    summary: 'Search admins by company and name with pagination',
+  })
   @ApiResponse({
     status: 200,
-    description: 'List of admins in the company matching the name',
+    description: 'Paginated list of admins in the company matching the name',
     type: [User],
   })
   @HttpCode(HttpStatus.OK)
   async searchAdminsByCompanyAndName(
-    @Query('companyId') companyId: number,
+    @Query('companyId', ParseIntPipe) companyId: number,
     @Query('name') name: string,
-  ): Promise<User[]> {
+    @Query() paginationUserDto: PaginationUserDto,
+  ): Promise<{ data: User[]; total: number }> {
     if (!companyId) {
       throw new BadRequestException('CompanyId query parameter is required');
     }
@@ -269,6 +273,10 @@ export class UsersController {
       throw new BadRequestException('Name query parameter is required');
     }
 
-    return this.usersService.findAdminsByCompanyAndName(companyId, name);
+    return this.usersService.findAndPaginateAdminsByCompanyAndName(
+      companyId,
+      name,
+      paginationUserDto,
+    );
   }
 }

@@ -36,7 +36,7 @@ export class AuthService {
       await this.usersService.updateUser(user.id, { token });
 
       const frontendUrl = this.configService.get<string>('CLIENT_URL');
-      const loginUrl = `${frontendUrl}/login?token=${token}`;
+      const loginUrl = `${frontendUrl}/?token=${token}`;
       const subject = 'Welcome to DreamTeam!';
 
       const htmlForEmail = `

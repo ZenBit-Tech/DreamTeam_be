@@ -2,6 +2,19 @@ import Customer from 'src/common/entities/customer.entity';
 import Route from 'src/common/entities/route.entity';
 import { LuggageSize, OrderStatus, UserRole } from 'src/common/enums';
 
+interface OrderSeedDataType {
+  collection_date: Date;
+  collection_address: string;
+  status: OrderStatus;
+  note: string | null;
+  customer: Customer;
+  route: Route;
+  luggage: Array<{
+    luggage_size: LuggageSize;
+    luggage_weight: number;
+  }>;
+}
+
 export const superAdminSeedData = {
   full_name: 'Super Admin',
   email: 'dreamteam@gmail.com',
@@ -10,11 +23,26 @@ export const superAdminSeedData = {
   token: 'mock token',
 };
 
+export const customerSeedData = {
+  full_name: 'Customer',
+  email: 'dreamteam@gmail.com',
+  phone_number: '+123456',
+};
+
+export const routeSeedData = {
+  distance: 21,
+  start_address: 'Dortmund',
+  end_address: 'Koln',
+};
+
 export const seedCollectionDate = new Date();
 
-export const getOrdersSeedData = (customer: Customer, route: Route) => [
+export const getOrdersSeedData = (
+  customer: Customer,
+  route: Route,
+): Array<OrderSeedDataType> => [
   {
-    collection_date: new Date('2024-01-01T10:00:00Z'),
+    collection_date: seedCollectionDate,
     collection_address: '123 Main St, City',
     status: OrderStatus.UPCOMING,
     note: 'Handle with care',
@@ -26,25 +54,25 @@ export const getOrdersSeedData = (customer: Customer, route: Route) => [
     ],
   },
   {
-    collection_date: new Date('2024-02-14T14:00:00Z'),
+    collection_date: seedCollectionDate,
     collection_address: '456 Elm St, City',
     status: OrderStatus.COMPLETED,
-    note: 'No issues reported',
+    note: null,
     customer,
     route,
     luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: new Date('2024-03-08T09:00:00Z'),
+    collection_date: seedCollectionDate,
     collection_address: '320 Elm St, City',
     status: OrderStatus.AT_RISK,
-    note: 'Delayed delivery',
+    note: null,
     customer,
     route,
     luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: new Date('2024-04-10T15:00:00Z'),
+    collection_date: seedCollectionDate,
     collection_address: '500 Elm St, City',
     status: OrderStatus.COMPLETED,
     note: null,
@@ -53,10 +81,10 @@ export const getOrdersSeedData = (customer: Customer, route: Route) => [
     luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],
   },
   {
-    collection_date: new Date('2024-05-20T08:30:00Z'),
+    collection_date: seedCollectionDate,
     collection_address: '234 Elm St, City',
     status: OrderStatus.UPCOMING,
-    note: 'Fragile items',
+    note: null,
     customer,
     route,
     luggage: [{ luggage_size: LuggageSize.BIG, luggage_weight: 30 }],

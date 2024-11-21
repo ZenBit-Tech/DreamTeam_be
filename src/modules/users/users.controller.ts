@@ -289,7 +289,7 @@ export class UsersController {
     type: CreateUserDto,
   })
   @HttpCode(HttpStatus.CREATED)
-  async addOrUpdateAdmin(
+  async addAdminToCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
     @Body(new ValidationPipe({ whitelist: true })) createUserDto: CreateUserDto,
   ): Promise<CreateUserDto> {
@@ -307,12 +307,12 @@ export class UsersController {
     type: UpdateUserDto,
   })
   @HttpCode(HttpStatus.OK)
-  async editAdminForCompany(
+  async editAdminInCompany(
     @Query('company') companyId: number,
     @Query('email') email: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateUserDto> {
-    return this.usersService.editAdminToCompany(
+    return this.usersService.editAdminInCompany(
       companyId,
       email,
       updateUserDto,

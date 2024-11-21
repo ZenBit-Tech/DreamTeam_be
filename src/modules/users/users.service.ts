@@ -261,7 +261,7 @@ export class UsersService {
     return this.userRepository.save(newAdmin);
   }
 
-  async editAdminToCompany(
+  async editAdminInCompany(
     companyId: number,
     email: string,
     updateUserDto: UpdateUserDto,

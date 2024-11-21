@@ -232,4 +232,58 @@ export class UsersService {
       );
     }
   }
+
+  async addAdminToCompany(
+    companyId: number,
+    createUserDto: CreateUserDto,
+  ): Promise<CreateUserDto> {
+    const existingUser = await this.userRepository.findOne({
+      where: { email: createUserDto.email, company: { id: companyId } },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException(
+        `User with email ${createUserDto.email} already exists in this company.`,
+      );
+    }
+
+    if (createUserDto.role !== UserRole.ADMIN) {
+      throw new BadRequestException(
+        `Invalid role ${createUserDto.role}. Only ADMIN role is allowed.`,
+      );
+    }
+
+    const newAdmin = this.userRepository.create({
+      ...createUserDto,
+      company: { id: companyId },
+    });
+
+    return this.userRepository.save(newAdmin);
+  }
+
+  async editAdminToCompany(
+    companyId: number,
+    email: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserDto> {
+    const admin = await this.userRepository.findOne({
+      where: {
+        email,
+        company: { id: companyId },
+        role: UserRole.ADMIN,
+      },
+    });
+
+    if (!admin) {
+      throw new NotFoundException(
+        `Admin with email ${email} in company ${companyId} not found.`,
+      );
+    }
+
+    await this.userRepository.update(admin.id, updateUserDto);
+
+    return this.userRepository.findOne({
+      where: { id: admin.id },
+    });
+  }
 }

@@ -279,4 +279,43 @@ export class UsersController {
       paginationUserDto,
     );
   }
+
+  @Post('/admins/company/:companyId')
+  @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Create or update admin by company ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'Admin successfully added or updated for the company',
+    type: CreateUserDto,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  async addAdminToCompany(
+    @Param('companyId', ParseIntPipe) companyId: number,
+    @Body(new ValidationPipe({ whitelist: true })) createUserDto: CreateUserDto,
+  ): Promise<CreateUserDto> {
+    return this.usersService.addAdminToCompany(companyId, createUserDto);
+  }
+
+  @Patch('/admins/edit')
+  @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({
+    summary: 'Edit a specific admin for a company by email',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Admin successfully updated for the company',
+    type: UpdateUserDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  async editAdminInCompany(
+    @Query('company') companyId: number,
+    @Query('email') email: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserDto> {
+    return this.usersService.editAdminInCompany(
+      companyId,
+      email,
+      updateUserDto,
+    );
+  }
 }
